@@ -2,6 +2,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common'
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core'
 import { GraphQLModule } from '@nestjs/graphql'
+import { join } from 'path'
 import { AuthGuard } from './auth/auth.guard'
 import { AuthModule } from './auth/auth.module'
 import { CatsModule } from './cats/cats.module'
@@ -36,13 +37,13 @@ import { UsersModule } from './users/users.module'
       include: [PostModule],
       driver: ApolloDriver,
       playground: true,
-      // typePaths: ['./src/**/*.graphql'],
-      // definitions: {
-      //   path: join(process.cwd(), 'src/graphql.ts'),
-      //   outputAs: 'class',
-      //   emitTypenameField: true,
-      //   skipResolverArgs: true,
-      // }
+      typePaths: ['./src/**/*.graphql'],
+      definitions: {
+        path: join(process.cwd(), 'graphql.ts'),
+        outputAs: 'class',
+        emitTypenameField: true,
+        skipResolverArgs: true,
+      }
     }),
     PostModule
   ],

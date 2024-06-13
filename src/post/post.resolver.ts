@@ -7,7 +7,7 @@ export class PostResolver {
     private postService: PostService
   ) { }
   
-  @Query() 
+  @Query('post') 
   findOne (@Args('id') id: number) {
     return this.postService.findOne(id)
   }
