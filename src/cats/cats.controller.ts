@@ -1,31 +1,30 @@
-import { Body, Controller, Get, Post, Put, Req } from "@nestjs/common";
-import { Request } from "express";
-import { CatsService } from './cats.service';
-import { CreateCatDTO } from "./dto/create-cat.dto";
-import { UpdateCatDTO } from "./dto/update-cat.dto";
-
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common'
+import { CatsService } from './cats.service'
+import { CreateCatDTO } from './dto/create-cat.dto'
+import { UpdateCatDTO } from './dto/update-cat.dto'
 
 @Controller('cats')
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
   @Get()
-  findAll(@Req() req: Request): string {
+  findAll() {
     const cats = this.catsService.findAll()
-    return `This will return all cats, url: ${req.url}, method: ${req.method}, cats: ${JSON.stringify(cats)}`
+    return cats
   }
   @Get(':id')
-  findOne(@Req() req: Request): string {
-    return `This will return a cat with id ${req.params.id}`
+  findOne(@Param('id') id: string) {
+    const cat = this.catsService.findOne(+id)
+    return cat
   }
   @Put()
-  update(@Body() updateCatDTO: UpdateCatDTO): string {
+  update(@Body() updateCatDTO: UpdateCatDTO) {
     const cat = this.catsService.update(updateCatDTO)
-    return `This will update a cat with id ${updateCatDTO.id}, ${JSON.stringify(cat)}`
+    return cat
   }
   @Post()
-  create(@Body() createCatDTO: CreateCatDTO): string {
+  create(@Body() createCatDTO: CreateCatDTO) {
     const cat = this.catsService.create(createCatDTO)
-    return `This will create a new cat, ${JSON.stringify(cat)}`
+    return cat
   }
 }

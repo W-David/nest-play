@@ -19,15 +19,15 @@ export class UsersService {
       id: 3,
       name: 'Bob Johnson',
       password: 'password789',
-      roles: ['admin', 'user']
-    }
+      roles: ['admin', 'user'],
+    },
   ]
 
   findAll() {
     return this.users
   }
 
-  findOne (username: string) {
-    return this.users.find(user => user.name === username)
+  findOne(username: string) {
+    return this.users.find((user) => user.name === username)
   }
 }

@@ -4,6 +4,23 @@ type Post {
   content: String
 }
 
+input CreatePostInput {
+  title: String
+  content: String
+}
+
+input UpdatePostInput {
+  id: Int!
+  title: String
+  content: String
+}
+
 type Query {
-  post(id: Int!) : Post
+  findOne(id: Int!): Post
+  findAll: [Post]
+}
+
+type Mutation {
+  create(post: CreatePostInput): Post
+  update(post: UpdatePostInput): Post
 }

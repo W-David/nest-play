@@ -1,13 +1,14 @@
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common'
-import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core'
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 import { GraphQLModule } from '@nestjs/graphql'
 import { join } from 'path'
-import { AuthGuard } from './auth/auth.guard'
 import { AuthModule } from './auth/auth.module'
 import { CatsModule } from './cats/cats.module'
-import { AllExceptionsFilter, HttpExceptionFilter } from './common/exception.filter'
+import { AllExceptionsFilter } from './common/exception.filter'
 import { logger as LoggerMiddleware } from './common/logger.middleware'
+import { TransformInterceptor } from './common/transform.interceptor'
 import { PostModule } from './post/post.module'
 import { UsersModule } from './users/users.module'
 
@@ -15,19 +16,20 @@ import { UsersModule } from './users/users.module'
   providers: [
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter
+      useClass: AllExceptionsFilter,
     },
     {
-      provide: APP_FILTER,
-      useClass: AllExceptionsFilter
-    }, {
       provide: APP_PIPE,
-      useClass: ValidationPipe
+      useClass: ValidationPipe,
     },
     {
-      provide: APP_GUARD,
-      useClass: AuthGuard
-    }
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
+    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
   ],
   imports: [
     CatsModule,
@@ -36,20 +38,22 @@ import { UsersModule } from './users/users.module'
     GraphQLModule.forRoot<ApolloDriverConfig>({
       include: [PostModule],
       driver: ApolloDriver,
-      playground: true,
+      // playground: true,
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
       typePaths: ['./src/**/*.graphql'],
       definitions: {
-        path: join(process.cwd(), 'graphql.ts'),
+        path: join(process.cwd(), 'src/graphql.ts'),
         outputAs: 'class',
         emitTypenameField: true,
         skipResolverArgs: true,
-      }
+      },
     }),
-    PostModule
+    PostModule,
   ],
 })
 export class AppModule implements NestModule {
-  configure (consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('cats')
   }
 }

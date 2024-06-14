@@ -1,6 +1,7 @@
-import { Injectable } from "@nestjs/common"
-import { CreateCatDTO } from "./dto/create-cat.dto"
-import { Cat } from "./interfaces/cat.interface"
+import { Injectable } from '@nestjs/common'
+import { CreateCatDTO } from './dto/create-cat.dto'
+import { UpdateCatDTO } from './dto/update-cat.dto'
+import { Cat } from './interfaces/cat.interface'
 
 @Injectable()
 export class CatsService {
@@ -12,16 +13,21 @@ export class CatsService {
     return this.cats
   }
 
-  create (cat: CreateCatDTO): Cat {
-    const catO = {...cat, id: this.cats.length + 1 }
+  findOne(id: number): Cat {
+    const cat = this.cats.find((c) => c.id === id)
+    return cat
+  }
+
+  create(cat: CreateCatDTO): Cat {
+    const catO = { ...cat, id: this.cats.length + 1 }
     this.cats.push(catO)
     return catO
   }
 
-  update(cat: Cat): Cat {
-    const index = this.cats.findIndex(c => c.id === cat.id)
+  update(cat: UpdateCatDTO): Cat {
+    const index = this.cats.findIndex((c) => c.id === cat.id)
     if (index === -1) {
-      throw new Error(`Cat with id ${cat.id} not found`)
+      return null
     }
     this.cats[index] = cat
     return cat

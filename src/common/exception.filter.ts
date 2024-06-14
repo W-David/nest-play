@@ -1,38 +1,37 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from "@nestjs/common";
-import { HttpAdapterHost } from "@nestjs/core";
-import { Response } from "express";
-
-@Catch(HttpException)
-export class HttpExceptionFilter implements ExceptionFilter {
-  catch (exception: HttpException, host: ArgumentsHost) {
-    const ctx = host.switchToHttp()
-    const response = ctx.getResponse<Response>()
-    const status = exception.getStatus()
-    const timestemp = new Date().toISOString()
-
-    response.status(status).json({
-      statusCode: status,
-      timestamp: timestemp.split('T')[0] + ' ' + timestemp.split('T')[1].split('.')[0],
-      message: exception.message,
-    })
-  }
-}
+import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common'
+import { HttpAdapterHost } from '@nestjs/core'
+import { Response } from 'express'
+import * as moment from 'moment'
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
-  catch (exception: unknown, host: ArgumentsHost) {
+  catch(exception: unknown, host: ArgumentsHost) {
     const { httpAdapter } = this.httpAdapterHost
     const ctx = host.switchToHttp()
-    const timestemp = new Date().toISOString()
+    const response = ctx.getResponse<Response>()
+    const timestamp = moment().format('YYYY-MM-DD HH:mm:ss')
 
-    const httpStatus = exception instanceof HttpException? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
-    const responseBody = {
-      statusCode: httpStatus,
-      timestamp: timestemp.split('T')[0] + ' ' + timestemp.split('T')[1].split('.')[0],
-      message: exception instanceof HttpException ? exception.message : 'Internal server error'
+    let code = HttpStatus.INTERNAL_SERVER_ERROR
+    let message = 'Internal server error'
+
+    if (exception instanceof HttpException) {
+      code = exception.getStatus()
+      message = exception.getResponse()['message'] || exception.message
+    } else if (exception instanceof BadRequestException) {
+      code = exception.getStatus()
+      message = exception.getResponse()['message'][0] || exception.message
+    } else {
+      code = HttpStatus.INTERNAL_SERVER_ERROR
+      message = (exception as Error).message || 'Internal server error'
     }
 
-    httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus)
-   }
+    const responseBody = {
+      code,
+      timestamp,
+      message,
+    }
+
+    httpAdapter.reply(response, responseBody, code)
+  }
 }
