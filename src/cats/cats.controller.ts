@@ -1,8 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Put, UseInterceptors } from '@nestjs/common'
+import { TransformInterceptor } from 'src/common/transform.interceptor'
 import { CatsService } from './cats.service'
 import { CreateCatDTO } from './dto/create-cat.dto'
 import { UpdateCatDTO } from './dto/update-cat.dto'
+// import { AuthGuard } from 'src/auth/auth.guard'
 
+@UseInterceptors(TransformInterceptor)
+// @UseGuards(AuthGuard)
 @Controller('cats')
 export class CatsController {
   constructor(private catsService: CatsService) {}

@@ -1,14 +1,14 @@
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common'
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
+import { APP_FILTER, APP_PIPE } from '@nestjs/core'
 import { GraphQLModule } from '@nestjs/graphql'
 import { join } from 'path'
 import { AuthModule } from './auth/auth.module'
+import { CatsController } from './cats/cats.controller'
 import { CatsModule } from './cats/cats.module'
 import { AllExceptionsFilter } from './common/exception.filter'
-import { logger as LoggerMiddleware } from './common/logger.middleware'
-import { TransformInterceptor } from './common/transform.interceptor'
+import { LoggerMiddleware } from './common/logger.middleware'
 import { PostModule } from './post/post.module'
 import { UsersModule } from './users/users.module'
 
@@ -22,14 +22,6 @@ import { UsersModule } from './users/users.module'
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: TransformInterceptor,
-    },
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AuthGuard,
-    // },
   ],
   imports: [
     CatsModule,
@@ -54,6 +46,6 @@ import { UsersModule } from './users/users.module'
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('cats')
+    consumer.apply(LoggerMiddleware).forRoutes(CatsController)
   }
 }
