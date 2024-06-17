@@ -1,33 +1,49 @@
 import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
+import { PrismaService } from 'src/prisma.service'
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      id: 1,
-      name: 'John Doe',
-      password: 'password123',
-      roles: ['admin'],
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      password: 'password456',
-      roles: ['user'],
-    },
-    {
-      id: 3,
-      name: 'Bob Johnson',
-      password: 'password789',
-      roles: ['admin', 'user'],
-    },
-  ]
+  constructor(private prismaService: PrismaService) {}
 
-  findAll() {
-    return this.users
+  create(data: Prisma.UserCreateInput) {
+    return this.prismaService.user.create({
+      data,
+    })
   }
 
-  findOne(username: string) {
-    return this.users.find((user) => user.name === username)
+  update(params: { where: Prisma.UserWhereUniqueInput; data: Prisma.UserUpdateInput }) {
+    const { where, data } = params
+    return this.prismaService.user.update({
+      where,
+      data,
+    })
+  }
+
+  delete(where: Prisma.UserWhereUniqueInput) {
+    return this.prismaService.user.delete({
+      where,
+    })
+  }
+
+  findAll(params: {
+    skip?: number
+    take?: number
+    cursor?: Prisma.UserWhereUniqueInput
+    where?: Prisma.UserWhereInput
+    orderBy?: Prisma.UserOrderByWithRelationInput
+  }) {
+    const { skip, take, cursor, where, orderBy } = params
+    return this.prismaService.user.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    })
+  }
+
+  findOne(userWhereUniqueInput: Prisma.UserWhereUniqueInput) {
+    return this.prismaService.user.findUnique({ where: userWhereUniqueInput })
   }
 }
