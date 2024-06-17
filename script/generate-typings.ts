@@ -1,5 +1,5 @@
-import { GraphQLDefinitionsFactory } from "@nestjs/graphql"
-import { join } from "path"
+import { GraphQLDefinitionsFactory } from '@nestjs/graphql'
+import { join } from 'path'
 
 const definitionsFactory = new GraphQLDefinitionsFactory()
 definitionsFactory.generate({
@@ -8,5 +8,5 @@ definitionsFactory.generate({
   outputAs: 'class',
   emitTypenameField: true,
   skipResolverArgs: true,
-  watch: true
+  watch: true,
 })
