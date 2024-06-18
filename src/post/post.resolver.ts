@@ -1,7 +1,5 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { CreatePostDto } from './dto/create-post.dto'
-import { UpdatePostDto } from './dto/update-post.dto'
-import { Post } from './interfaces/post.interface'
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Prisma } from '@prisma/client'
 import { PostService } from './post.service'
 
 @Resolver('Post')
@@ -9,26 +7,32 @@ export class PostResolver {
   constructor(private postService: PostService) {}
 
   @Query()
-  findOne(@Args('id') id: number): Post {
-    const post = this.postService.findOne(id)
+  async findOne(@Args('id', { type: () => Int }) id: number) {
+    const post = await this.postService.findOne({ id })
     return post
   }
 
   @Query()
-  findAll(): Post[] {
-    const posts = this.postService.findAll()
+  findAll(@Args('params') params: Prisma.PostFindManyArgs) {
+    const posts = this.postService.findAll(params)
     return posts
   }
 
   @Mutation()
-  update(@Args('post') post: UpdatePostDto): Post {
-    const updatedPost = this.postService.update(post)
+  create(@Args('post') post: Prisma.PostCreateInput) {
+    const createdPost = this.postService.create(post)
+    return createdPost
+  }
+
+  @Mutation()
+  update(@Args('post') post: { id: number } & Prisma.PostUpdateInput) {
+    const updatedPost = this.postService.update({ where: { id: post.id }, data: post })
     return updatedPost
   }
 
   @Mutation()
-  create(@Args('post') post: CreatePostDto): Post {
-    const createdPost = this.postService.create(post)
-    return createdPost
+  delete(@Args('id') id: number) {
+    const deletedPost = this.postService.delete({ id })
+    return deletedPost
   }
 }

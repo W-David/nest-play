@@ -1,9 +1,8 @@
-import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
+import { ApolloDriver } from '@nestjs/apollo'
 import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common'
 import { APP_FILTER, APP_PIPE } from '@nestjs/core'
-import { GraphQLModule } from '@nestjs/graphql'
 import { join } from 'path'
+import { TypeGraphQLModule } from 'typegraphql-nestjs'
 import { AuthModule } from './auth/auth.module'
 import { CatsController } from './cats/cats.controller'
 import { CatsModule } from './cats/cats.module'
@@ -27,20 +26,19 @@ import { UsersModule } from './users/users.module'
     CatsModule,
     AuthModule,
     UsersModule,
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      include: [PostModule],
+    TypeGraphQLModule.forRoot({
       driver: ApolloDriver,
-      // playground: true,
-      playground: false,
-      plugins: [ApolloServerPluginLandingPageLocalDefault()],
-      typePaths: ['./src/**/*.graphql'],
-      definitions: {
-        path: join(process.cwd(), 'src/graphql.ts'),
-        outputAs: 'class',
-        emitTypenameField: true,
-        skipResolverArgs: true,
-      },
+      emitSchemaFile: join(process.cwd(), 'src/schema.graphql'),
+      validate: false,
+      include: [PostModule],
     }),
+    // GraphQLModule.forRoot<ApolloDriverConfig>({
+    //   include: [PostModule],
+    //   driver: ApolloDriver,
+    //   playground: false,
+    //   plugins: [ApolloServerPluginLandingPageLocalDefault()],
+    //   autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+    // }),
     PostModule,
   ],
 })

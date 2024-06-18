@@ -1,31 +1,34 @@
 import { Injectable } from '@nestjs/common'
-import { Post } from './interfaces/post.interface'
+import { Prisma } from '@prisma/client'
+import { PrismaService } from 'src/prisma.service'
 
 @Injectable()
 export class PostService {
-  private posts: Post[] = []
-  constructor() {}
+  constructor(private prismaService: PrismaService) {}
 
-  create(post: Omit<Post, 'id'>) {
-    const newPost = { id: this.posts.length + 1, ...post }
-    this.posts.push(newPost)
-    return newPost
+  create(data: Prisma.PostCreateInput) {
+    return this.prismaService.post.create({
+      data,
+    })
   }
 
-  update(post: Post) {
-    const index = this.posts.findIndex((p) => p.id === post.id)
-    if (index === -1) {
-      return null
-    }
-    this.posts[index] = post
-    return post
+  update(params: { where: Prisma.PostWhereUniqueInput; data: Prisma.PostUpdateInput }) {
+    return this.prismaService.post.update(params)
   }
 
-  findOne(id: number) {
-    return this.posts.find((post) => post.id === id)
+  delete(where: Prisma.PostWhereUniqueInput) {
+    return this.prismaService.post.delete({
+      where,
+    })
   }
 
-  findAll() {
-    return this.posts
+  findAll(params: Prisma.PostFindManyArgs) {
+    return this.prismaService.post.findMany(params)
+  }
+
+  findOne(where: Prisma.PostWhereUniqueInput) {
+    return this.prismaService.post.findUnique({
+      where,
+    })
   }
 }

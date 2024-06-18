@@ -13,11 +13,7 @@ export class UsersService {
   }
 
   update(params: { where: Prisma.UserWhereUniqueInput; data: Prisma.UserUpdateInput }) {
-    const { where, data } = params
-    return this.prismaService.user.update({
-      where,
-      data,
-    })
+    return this.prismaService.user.update(params)
   }
 
   delete(where: Prisma.UserWhereUniqueInput) {
@@ -33,14 +29,7 @@ export class UsersService {
     where?: Prisma.UserWhereInput
     orderBy?: Prisma.UserOrderByWithRelationInput
   }) {
-    const { skip, take, cursor, where, orderBy } = params
-    return this.prismaService.user.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    })
+    return this.prismaService.user.findMany(params)
   }
 
   findOne(userWhereUniqueInput: Prisma.UserWhereUniqueInput) {
