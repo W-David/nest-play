@@ -16,7 +16,6 @@
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "prisma:reset": "prisma reset --force",
-    "graphql": "ts-node script/generate-typings.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -66,6 +65,7 @@
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
+    "typegraphql-prisma": "^0.27.2",
     "typescript": "^5.1.3"
   },
   "jest": {
